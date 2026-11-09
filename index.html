@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Reserva de Dispositivos - EquipHub</title>
+  <title>EquipHub - Portal de Reserva de Dispositivos</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- React & ReactDOM -->
@@ -14,12 +14,153 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Inter Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      color-scheme: light;
+      --portal-ink: #263648;
+      --portal-navy: #26394d;
+      --portal-blue: #486580;
+      --portal-line: #dce3e9;
+      --portal-canvas: #f3f5f7;
+      --portal-surface: #ffffff;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
+      background-color: var(--portal-canvas);
+      color: var(--portal-ink);
+      letter-spacing: -0.01em;
+    }
+    #root {
+      min-height: 100vh;
+    }
+    #root header {
+      background-color: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 18px rgba(31, 48, 65, 0.045);
+    }
+    #root main {
+      padding-top: 2rem;
+      padding-bottom: 2.75rem;
+    }
+    #root main .bg-white {
+      border-color: var(--portal-line);
+      box-shadow: 0 8px 24px rgba(31, 48, 65, 0.045);
+    }
+    #root main table {
+      color: #405064;
+    }
+    #root main thead th {
+      letter-spacing: 0.055em;
+    }
+    #root main tbody td {
+      line-height: 1.45;
+    }
+    #root main .grid > div {
+      transition: box-shadow 180ms ease, transform 180ms ease;
+    }
+    #root main .grid > div:hover {
+      box-shadow: 0 14px 30px rgba(31, 48, 65, 0.1);
+      transform: translateY(-2px);
+    }
+    #root button {
+      letter-spacing: 0;
+    }
+    #root button:focus-visible,
+    #root a:focus-visible,
+    #root input:focus-visible,
+    #root select:focus-visible,
+    #root textarea:focus-visible {
+      outline: 2px solid #6c849b;
+      outline-offset: 2px;
+    }
+    #root input,
+    #root select,
+    #root textarea {
+      border-color: #d5dee6;
+      background-color: #fff;
+    }
+    #root input:focus,
+    #root select:focus,
+    #root textarea:focus {
+      border-color: #8297aa;
+      box-shadow: 0 0 0 3px rgba(72, 101, 128, 0.12);
+      outline: none;
+    }
+    .shadow-xs {
+      box-shadow: 0 4px 12px rgba(31, 48, 65, 0.045);
+    }
+    [class~="bg-slate-50"] {
+      background-color: #f8fafb !important;
+    }
+    [class~="bg-slate-100"] {
+      background-color: #f0f3f5 !important;
+    }
+    [class~="bg-slate-200"] {
+      background-color: #e7ecef !important;
+    }
+    [class~="bg-indigo-50"] {
+      background-color: #f0f4f7 !important;
+    }
+    [class~="bg-indigo-100"] {
+      background-color: #e7edf2 !important;
+    }
+    [class~="bg-indigo-500"] {
+      background-color: #637d96 !important;
+    }
+    [class~="bg-indigo-600"] {
+      background-color: var(--portal-blue) !important;
+    }
+    [class~="bg-indigo-900"] {
+      background-color: var(--portal-navy) !important;
+    }
+    [class~="hover:bg-indigo-700"]:hover {
+      background-color: #3a566f !important;
+    }
+    [class~="hover:bg-indigo-100"]:hover {
+      background-color: #e8eef3 !important;
+    }
+    [class~="text-indigo-400"] {
+      color: #a9bac9 !important;
+    }
+    [class~="text-indigo-600"] {
+      color: var(--portal-blue) !important;
+    }
+    [class~="text-indigo-700"] {
+      color: #405d78 !important;
+    }
+    [class~="text-indigo-900"] {
+      color: #2f465c !important;
+    }
+    [class~="border-indigo-200"] {
+      border-color: #d0dbe4 !important;
+    }
+    [class~="border-indigo-800"] {
+      border-color: #3d5267 !important;
+    }
+    [class~="border-indigo-950"] {
+      border-color: #1d2c3b !important;
+    }
+    [class~="bg-blue-50"] {
+      background-color: #edf3f7 !important;
+    }
+    [class~="bg-blue-100"] {
+      background-color: #e1ebf2 !important;
+    }
+    [class~="bg-emerald-50"] {
+      background-color: #eef5f1 !important;
+    }
+    [class~="bg-emerald-100"] {
+      background-color: #e4efe8 !important;
+    }
+    [class~="hover:bg-emerald-100"]:hover {
+      background-color: #dceae1 !important;
+    }
+    ::selection {
+      background-color: #526d88;
+      color: #fff;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -27,6 +168,7 @@
     }
     .custom-scrollbar::-webkit-scrollbar-track {
       background: #f1f5f9;
+      border-radius: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: #cbd5e1;
@@ -35,112 +177,276 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    @media (max-width: 640px) {
+      #root main {
+        padding-top: 1.25rem;
+        padding-bottom: 1.75rem;
+      }
+    }
   </style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
+<body class="text-slate-800 antialiased selection:bg-indigo-500 selection:text-white min-h-screen">
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
-    const INITIAL_DEVICES = [
-      { id: 'dev-1', name: 'Notebook Institucional', category: 'Notebook', model: 'Lenovo ThinkPad', assetTag: 'NB-001', status: 'Available', location: 'Oficina TI - Estante 1', specs: 'Core i7, 16GB RAM, 512GB SSD', image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80' },
-      { id: 'dev-2', name: 'iPad Pro 12.9"', category: 'iPads', model: 'Wi-Fi 256GB + Pencil', assetTag: 'PAD-001', status: 'Available', location: 'Sala de Profesores', specs: 'Pantalla Liquid Retina, Chip M2', image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80' },
-      { id: 'dev-3', name: 'Apple TV 4K', category: 'AppleTV', model: '3ra Gen - 128GB', assetTag: 'ATV-001', status: 'Available', location: 'Auditorio', specs: 'Soporte 4K HDR, Dolby Vision', image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=600&q=80' }
+    // --- Bloques Pedagógicos por Ciclo ---
+    const PERIODS_BASICA = [
+      { id: 'p1', label: 'Bloque 1', start: '08:15', end: '09:00' },
+      { id: 'p2', label: 'Bloque 2', start: '09:00', end: '09:45' },
+      { id: 'p3', label: 'Bloque 3', start: '09:45', end: '10:30' },
+      { id: 'p4', label: 'Bloque 4', start: '10:30', end: '11:15' },
+      { id: 'p5', label: 'Bloque 5', start: '11:15', end: '12:00' },
+      { id: 'p6', label: 'Bloque 6', start: '12:00', end: '12:45' },
+      { id: 'p7', label: 'Bloque 7', start: '12:45', end: '13:30' },
+      { id: 'p8', label: 'Bloque 8', start: '13:35', end: '14:20' },
+      { id: 'p9', label: 'Bloque 9', start: '14:20', end: '15:05' },
+      { id: 'p10', label: 'Bloque 10', start: '15:05', end: '15:50' },
+      { id: 'p11', label: 'Bloque 11', start: '15:50', end: '16:20' },
     ];
 
-    const CATEGORIES = ['Todos', 'iPads', 'Notebook', 'AppleTV'];
+    const PERIODS_MEDIA = [
+      { id: 'm1', label: 'Bloque 1', start: '08:10', end: '08:55', color: 'bg-amber-100 border-amber-200 text-amber-900' },
+      { id: 'm2', label: 'Bloque 2', start: '08:55', end: '09:40', color: 'bg-amber-100 border-amber-200 text-amber-900' },
+      { id: 'm3', label: 'Bloque 3', start: '09:40', end: '10:25', color: 'bg-sky-100 border-sky-200 text-sky-900 font-semibold' },
+      { id: 'm4', label: 'Bloque 4', start: '10:40', end: '11:25', color: 'bg-sky-100 border-sky-200 text-sky-900 font-semibold' },
+      { id: 'm5', label: 'Bloque 5', start: '11:25', end: '12:10', color: 'bg-sky-100 border-sky-200 text-sky-900 font-semibold' },
+      { id: 'm6', label: 'Bloque 6', start: '12:25', end: '13:10', color: 'bg-amber-200 border-amber-300 text-amber-950 font-semibold' },
+      { id: 'm7', label: 'Bloque 7', start: '13:10', end: '13:55', color: 'bg-slate-200 border-slate-300 text-slate-800' },
+      { id: 'm8', label: 'Bloque 8', start: '14:35', end: '15:20', color: 'bg-rose-100 border-rose-200 text-rose-900 font-semibold' },
+      { id: 'm9', label: 'Bloque 9', start: '15:20', end: '16:05', color: 'bg-slate-200 border-slate-300 text-slate-800' },
+      { id: 'm10', label: 'Bloque 10', start: '16:05', end: '16:50', color: 'bg-slate-200 border-slate-300 text-slate-800' },
+    ];
 
+    // --- Ubicaciones por Ciclo ---
+    const MEDIA_SECTIONS = [
+      { id: 'sec-1', title: 'PRIMER PISO SALA PROFESORES', floor: 1, tag: 'Piso 1' },
+      { id: 'sec-2', title: 'SEGUNDO PISO SALA CIENCIAS', floor: 2, tag: 'Piso 2' },
+      { id: 'sec-3', title: 'CARRO NOTEBOOK SALA TECNOLOGIA', floor: 2, tag: 'Carro Notebooks' },
+    ];
+
+    // Helper para obtener fechas de la semana actual
+    const getMondayDate = (d = new Date()) => {
+      const date = new Date(d);
+      const day = date.getDay();
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(date.setDate(diff));
+    };
+
+    const getWeekDaysDates = (monday) => {
+      const days = [];
+      for (let i = 0; i < 5; i++) {
+        const nextDay = new Date(monday);
+        nextDay.setDate(monday.getDate() + i);
+        days.push(nextDay.toISOString().split('T')[0]);
+      }
+      return days; // [lun, mar, mie, jue, vie]
+    };
+
+    const currentMonday = getMondayDate();
+    const currentWeekDates = getWeekDaysDates(currentMonday);
+
+    // --- Data Inicial Dispositivos ---
+    const INITIAL_DEVICES = [
+      {
+        id: 'dev-1',
+        name: 'Carro Notebooks Sala Profesores',
+        category: 'Notebooks',
+        cycle: 'Media',
+        model: 'Carro Movil 30 Notebooks HP',
+        assetTag: 'CARRO-MED-01',
+        status: 'Available',
+        location: 'PRIMER PISO SALA PROFESORES',
+        specs: '30 HP ProBook, Core i5, 8GB RAM',
+        image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'dev-2',
+        name: 'Carro iPads Sala Ciencias',
+        category: 'iPads',
+        cycle: 'Media',
+        model: 'Carro Movil 25 iPads 10.9"',
+        assetTag: 'CARRO-MED-02',
+        status: 'Available',
+        location: 'SEGUNDO PISO SALA CIENCIAS',
+        specs: '25 iPads 10.9" M1 + Stylus',
+        image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'dev-3',
+        name: 'Carro Notebook Sala Tecnología',
+        category: 'Notebooks',
+        cycle: 'Media',
+        model: 'Carro Movil Lenovo ThinkPad',
+        assetTag: 'CARRO-MED-03',
+        status: 'Available',
+        location: 'CARRO NOTEBOOK SALA TECNOLOGIA',
+        specs: '30 Lenovo ThinkPad i7',
+        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        id: 'dev-4',
+        name: 'iPad Pro 12.9" Básica',
+        category: 'iPads',
+        cycle: 'Basica',
+        model: 'M2 Wi-Fi 256GB',
+        assetTag: 'PAD-015',
+        status: 'Available',
+        location: 'Laboratorio de Diseño',
+        specs: 'Pantalla Liquid Retina XDR',
+        image: 'https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=600&q=80'
+      }
+    ];
+
+    // Helper para poblar datos de la planilla de Media
+    const createMediaReservations = () => {
+      const [lun, mar, mie, jue, vie] = currentWeekDates;
+      const res = [];
+      let idCounter = 1000;
+
+      const addRes = (sectionId, dateStr, periodId, user, purpose = '') => {
+        const period = PERIODS_MEDIA.find(p => p.id === periodId);
+        res.push({
+          id: `res-${idCounter++}`,
+          cycle: 'Media',
+          sectionId,
+          deviceId: sectionId === 'sec-1' ? 'dev-1' : sectionId === 'sec-2' ? 'dev-2' : 'dev-3',
+          deviceName: sectionId === 'sec-1' ? 'Carro Notebooks Sala Profesores' : sectionId === 'sec-2' ? 'Carro iPads Sala Ciencias' : 'Carro Notebook Sala Tecnología',
+          assetTag: sectionId === 'sec-1' ? 'CARRO-MED-01' : sectionId === 'sec-2' ? 'CARRO-MED-02' : 'CARRO-MED-03',
+          user,
+          department: 'Educación Media',
+          startDate: dateStr,
+          endDate: dateStr,
+          startTime: period ? period.start : '08:10',
+          endTime: period ? period.end : '08:55',
+          periodId,
+          purpose: purpose || `Reserva Horario Media - ${user}`,
+          status: 'Active'
+        });
+      };
+
+      // 1. PRIMER PISO SALA PROFESORES
+      // Martes
+      addRes('sec-1', mar, 'm1', 'Valentina Young');
+      addRes('sec-1', mar, 'm2', 'Valentina Young');
+      addRes('sec-1', mar, 'm4', 'Javiera Catrón');
+      addRes('sec-1', mar, 'm5', 'Javiera Catrón');
+      addRes('sec-1', mar, 'm6', 'Constanza Pozo');
+      addRes('sec-1', mar, 'm7', 'Constanza Pozo');
+      addRes('sec-1', mar, 'm9', 'Andrea Vilca');
+      addRes('sec-1', mar, 'm10', 'Javier Rodríguez');
+
+      // Miércoles
+      addRes('sec-1', mie, 'm1', 'Constanza Pozo');
+      addRes('sec-1', mie, 'm2', 'Constanza Pozo');
+      addRes('sec-1', mie, 'm3', 'Javier Rodríguez');
+      addRes('sec-1', mie, 'm4', 'Constanza Pozo');
+      addRes('sec-1', mie, 'm5', 'Constanza Pozo');
+      addRes('sec-1', mie, 'm8', 'Pamela Castillo');
+      addRes('sec-1', mie, 'm9', 'Pamela Castillo');
+
+      // Jueves
+      addRes('sec-1', jue, 'm1', 'Constanza Pozo');
+      addRes('sec-1', jue, 'm2', 'Constanza Pozo');
+      addRes('sec-1', jue, 'm4', 'Constanza Pozo');
+      addRes('sec-1', jue, 'm5', 'Constanza Pozo');
+      addRes('sec-1', jue, 'm6', 'Constanza Pozo');
+      addRes('sec-1', jue, 'm7', 'Constanza Pozo');
+      addRes('sec-1', jue, 'm8', 'Carla Leiva');
+      addRes('sec-1', jue, 'm9', 'Carla Leiva');
+
+      // Viernes
+      addRes('sec-1', vie, 'm1', 'Constanza Pozo');
+      addRes('sec-1', vie, 'm2', 'Constanza Pozo');
+      addRes('sec-1', vie, 'm6', 'Evelyn Orellana');
+      addRes('sec-1', vie, 'm7', 'Evelyn Orellana');
+      addRes('sec-1', vie, 'm8', 'Javier Rodríguez');
+
+      // 2. SEGUNDO PISO SALA CIENCIAS
+      // Lunes
+      addRes('sec-2', lun, 'm3', 'Andrea Vilca');
+      addRes('sec-2', lun, 'm5', 'Javier Rodríguez');
+
+      // Martes
+      addRes('sec-2', mar, 'm7', 'Javier Rodríguez');
+      addRes('sec-2', mar, 'm8', 'Javier Rodríguez');
+
+      // Miércoles
+      addRes('sec-2', mie, 'm1', 'Javier Rodríguez');
+      addRes('sec-2', mie, 'm3', 'Romina Galarce');
+      addRes('sec-2', mie, 'm4', 'Romina Galarce');
+      addRes('sec-2', mie, 'm5', 'Romina Galarce');
+
+      // Jueves
+      addRes('sec-2', jue, 'm1', 'Javier Rodríguez');
+      addRes('sec-2', jue, 'm3', 'Romina Galarce');
+      addRes('sec-2', jue, 'm4', 'Romina Galarce');
+      addRes('sec-2', jue, 'm5', 'Alejandra Riveros');
+      addRes('sec-2', jue, 'm6', 'Carolina Sánchez');
+      addRes('sec-2', jue, 'm7', 'Carolina Sánchez');
+
+      // Viernes
+      addRes('sec-2', vie, 'm3', 'Javier Rodríguez');
+      addRes('sec-2', vie, 'm4', 'Javier Rodríguez');
+
+      // 3. CARRO NOTEBOOK SALA TECNOLOGIA
+      // Lunes
+      ['m1','m2','m3','m4','m5','m8','m9','m10'].forEach(pId => addRes('sec-3', lun, pId, 'Marbel Schoess'));
+      addRes('sec-3', lun, 'm6', 'Jacqueline Inostrosa');
+      addRes('sec-3', lun, 'm7', 'Jacqueline Inostrosa');
+
+      // Martes (Completo)
+      PERIODS_MEDIA.forEach(p => addRes('sec-3', mar, p.id, 'Marbel Schoess'));
+
+      // Miércoles
+      addRes('sec-3', mie, 'm1', 'Valentina Young');
+      addRes('sec-3', mie, 'm6', 'Valentina Young');
+      addRes('sec-3', mie, 'm7', 'Valentina Young');
+      addRes('sec-3', mie, 'm8', 'Javiera Catrón');
+      addRes('sec-3', mie, 'm9', 'Javiera Catrón');
+
+      // Jueves
+      addRes('sec-3', jue, 'm4', 'Valentina Young');
+      addRes('sec-3', jue, 'm5', 'Valentina Young');
+
+      return res;
+    };
+
+    const INITIAL_RESERVATIONS = createMediaReservations();
+
+    const CATEGORIES = ['Todos', 'iPads', 'Notebooks', 'AppleTV'];
+
+    // --- Componente Icon Helper ---
+    function Icon({ name, className = "w-4 h-4" }) {
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      }, [name]);
+      return <i data-lucide={name} className={className}></i>;
+    }
+
+    // --- App Principal ---
     function App() {
+      const [cycle, setCycle] = useState('Media'); // 'Basica' | 'Media'
+      const [viewMode, setViewMode] = useState('matrix'); // 'matrix' | 'list'
       const [devices, setDevices] = useState(INITIAL_DEVICES);
-      const [currentCycle, setCurrentCycle] = useState('basica'); 
-      const [currentTab, setCurrentTab] = useState('catalog');
+      const [reservations, setReservations] = useState(INITIAL_RESERVATIONS);
+      const [currentTab, setCurrentTab] = useState('my-reservations');
       const [selectedCategory, setSelectedCategory] = useState('Todos');
       const [searchQuery, setSearchQuery] = useState('');
       
       const [bookingModalOpen, setBookingModalOpen] = useState(false);
       const [selectedDeviceForBooking, setSelectedDeviceForBooking] = useState(null);
-      
-      // Estados para el formulario de reserva
-      const [bookingName, setBookingName] = useState('');
-      const [bookingEmail, setBookingEmail] = useState('');
-      const [bookingReason, setBookingReason] = useState('');
+      const [presetBookingData, setPresetBookingData] = useState(null);
 
       const [deviceModalOpen, setDeviceModalOpen] = useState(false);
       const [editingDevice, setEditingDevice] = useState(null);
+
+      const [selectedWeekMonday, setSelectedWeekMonday] = useState(currentMonday);
+
       const [toast, setToast] = useState(null);
-
-      const [basicaData, setBasicaData] = useState({
-        p1: {
-          '08:15 a 09:00': { martes: 'Felipe C feria salud mental 15 iPads' },
-          '09:00 a 09:45': { martes: 'Felipe C feria salud mental 15 iPads' },
-          '10:00 a 10:45': { martes: 'Felipe C feria salud mental 15 iPads' },
-          '10:45 a 11:30': { martes: 'Felipe C feria salud mental 15 iPads' },
-          '11:45 a 12:30': { jueves: '2A Felipe', viernes: 'Thiare 6°A' },
-          '12:30 a 13:15': { jueves: '2A Felipe' },
-          '14:00 a 14:45': { jueves: 'Thiare 6°A' },
-          '14:45 a 15:30': { jueves: 'Thiare 6°A' }
-        },
-        p2: {
-          '08:15 a 09:00': { lunes: 'Margarita 5B', jueves: 'Margarita 5A', viernes: '4to C Evelyn' },
-          '09:00 a 09:45': { lunes: 'Margarita 5B', jueves: 'Margarita 5A', viernes: '4to C Evelyn' },
-          '10:00 a 10:45': { martes: 'Margarita 5A', jueves: 'Margarita 5B', viernes: 'Margarita 5B' },
-          '10:45 a 11:30': { martes: 'Margarita 5A', jueves: 'Margarita 5B', viernes: 'Margarita 5B' },
-          '11:45 a 12:30': { martes: '4to D Giannina', miercoles: 'Margarita 5B', viernes: 'Macarena 4D' },
-          '12:30 a 13:15': { viernes: 'Margarita 5A' },
-          '13:15 a 14:00': { lunes: '4to C Evelyn', martes: 'MACARENA 4C', miercoles: 'Margarita 5B', viernes: 'Macarena 4A' },
-          '14:45 a 15:30': { martes: '4to E Giannina', jueves: 'Margarita 5A' }
-        },
-        p3: {
-          '08:15 a 09:00': { lunes: 'Mariela 5C', martes: 'Margarita 5C', miercoles: 'Margarita 6°E', jueves: 'Felipe C 3ro A', viernes: 'Renata 3ro B' },
-          '09:00 a 09:45': { lunes: 'Mariela 5C', martes: 'Margarita 5C', miercoles: 'Margarita 6°E', jueves: 'Felipe C 3ro A', viernes: 'Renata 3ro B' },
-          '10:00 a 10:45': { lunes: 'Mariela 5C', martes: 'Thiare 6°C' },
-          '10:45 a 11:30': { lunes: 'Mariela 5C', martes: 'Thiare 6°C', miercoles: 'Thiare 6°D' },
-          '11:45 a 12:30': { lunes: 'Margarita 6toE', martes: 'Thiare 6°B', miercoles: 'Thiare 5°E', jueves: 'Margarita 5D' },
-          '12:30 a 13:15': { viernes: 'Mariela 6D' },
-          '13:15 a 14:00': { lunes: 'Margarita 5D', martes: 'Margarita 6E', jueves: 'Margarita 5C', viernes: 'Mariela 6D' },
-          '14:00 a 14:45': { martes: 'Thiare 5°E', miercoles: 'Thiare 6°B', jueves: 'Margarita 5C' },
-          '14:45 a 15:30': { lunes: 'Andrea 5D', martes: 'Thiare 5°E', miercoles: 'Thiare 6°B' },
-          '15:30 a 16:20': { lunes: 'Margarita 5C' }
-        }
-      });
-
-      const [mediaData, setMediaData] = useState({
-        salaProf: {
-          '08:10 a 08:55': { martes: 'Constanza Pozo', viernes: 'Constanza Pozo' },
-          '08:55 a 09:40': { martes: 'Constanza Pozo' },
-          '09:40 a 10:25': { lunes: 'Valentina Young', martes: 'Javier Rodríguez' },
-          '10:40 a 11:25': { lunes: 'Constanza Pozo', jueves: 'Constanza Pozo' },
-          '11:25 a 12:10': { lunes: 'Constanza Pozo', jueves: 'Constanza Pozo' },
-          '12:25 a 13:10': { martes: 'Constanza Pozo', jueves: 'Evelyn Orellana' },
-          '13:10 a 13:55': { martes: 'Constanza Pozo', jueves: 'Evelyn Orellana' },
-          '14:35 a 15:20': { lunes: 'Pamela Castillo', miercoles: 'Carla Leiva', jueves: 'Javier Rodríguez' },
-          '15:20 a 16:05': { lunes: 'Andrea Vilca', miercoles: 'Carla Leiva' },
-          '16:05 a 16:50': { lunes: 'Javier Rodríguez' }
-        },
-        salaCiencias: {
-          '08:10 a 08:55': { martes: 'Javier Rodríguez' },
-          '08:55 a 09:40': { martes: 'Javier Rodríguez' },
-          '09:40 a 10:25': { lunes: 'Andrea Vilca', miercoles: 'Romina Galaz' },
-          '10:40 a 11:25': { miercoles: 'Romina Galaz' },
-          '11:25 a 12:10': { lunes: 'Javier Rodríguez', miercoles: 'Alejandra Riveros' },
-          '12:25 a 13:10': { jueves: 'Carolina Sánchez' },
-          '13:10 a 13:55': { jueves: 'Javier Rodríguez', viernes: 'Carolina Sánchez' },
-          '14:35 a 15:20': { jueves: 'Javier Rodríguez' }
-        },
-        carroTecno: {
-          '08:10 a 08:55': { lunes: 'Gabriel Schoess' },
-          '08:55 a 09:40': { lunes: 'Gabriel Schoess' },
-          '09:40 a 10:25': { lunes: 'Gabriel Schoess', jueves: 'Valentina Young' },
-          '10:40 a 11:25': { lunes: 'Gabriel Schoess', jueves: 'Valentina Young' },
-          '11:25 a 12:10': { lunes: 'Gabriel Schoess' },
-          '12:25 a 13:10': { lunes: 'Jacqueline Inostroza' },
-          '13:10 a 13:55': { lunes: 'Jacqueline Inostroza' },
-          '14:35 a 15:20': { lunes: 'Javiera Catrón' },
-          '15:20 a 16:05': { lunes: 'Javiera Catrón' },
-          '16:05 a 16:50': { lunes: 'Gabriel Schoess' }
-        }
-      });
 
       const showToast = (message, type = 'success') => {
         setToast({ message, type });
@@ -153,169 +459,552 @@
         }
       });
 
-      const handleBookingSubmit = (e) => {
-        e.preventDefault();
-        showToast(`¡Reserva confirmada para ${bookingName}!`);
-        setBookingModalOpen(false);
-        setBookingName('');
-        setBookingEmail('');
-        setBookingReason('');
-      };
+      const activePeriods = cycle === 'Media' ? PERIODS_MEDIA : PERIODS_BASICA;
+      const cycleLabel = cycle === 'Media' ? 'Educación Media' : 'Educación Básica';
 
       const filteredDevices = useMemo(() => {
         return devices.filter(device => {
+          const matchesCycle = !device.cycle || device.cycle === cycle;
           const matchesCategory = selectedCategory === 'Todos' || device.category === selectedCategory;
           const matchesSearch = device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 device.assetTag.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 device.model.toLowerCase().includes(searchQuery.toLowerCase());
-          return matchesCategory && matchesSearch;
+          return matchesCycle && matchesCategory && matchesSearch;
         });
-      }, [devices, selectedCategory, searchQuery]);
+      }, [devices, selectedCategory, searchQuery, cycle]);
 
       const getStatusBadge = (status) => {
         switch (status) {
           case 'Available':
-            return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>Disponible</span>;
+            return (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Disponible
+              </span>
+            );
           case 'Reserved':
-            return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200"><span className="w-2 h-2 rounded-full bg-amber-500"></span>Reservado</span>;
+            return (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                Reservado
+              </span>
+            );
           case 'Maintenance':
-            return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200"><span className="w-2 h-2 rounded-full bg-rose-500"></span>Mantenimiento</span>;
+            return (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                Mantenimiento
+              </span>
+            );
           default:
             return null;
         }
       };
 
+      const openBookingModal = (device, preset = null) => {
+        if (device && device.status === 'Maintenance') return;
+        setSelectedDeviceForBooking(device || devices[0]);
+        setPresetBookingData(preset);
+        setBookingModalOpen(true);
+      };
+
+      const handleCreateBooking = (bookingData) => {
+        const newReservation = {
+          id: `res-${Date.now()}`,
+          cycle,
+          deviceId: selectedDeviceForBooking ? selectedDeviceForBooking.id : 'dev-1',
+          deviceName: selectedDeviceForBooking ? selectedDeviceForBooking.name : 'Dispositivo Tecnológico',
+          assetTag: selectedDeviceForBooking ? selectedDeviceForBooking.assetTag : 'EQ-001',
+          ...bookingData,
+          status: 'Active'
+        };
+
+        setReservations([newReservation, ...reservations]);
+        setBookingModalOpen(false);
+        setPresetBookingData(null);
+        showToast(`Reserva realizada para ${bookingData.user}`);
+      };
+
+      const handleCancelReservation = (reservationId) => {
+        setReservations(reservations.map(r =>
+          r.id === reservationId ? { ...r, status: 'Cancelled' } : r
+        ));
+        showToast('Reserva cancelada correctamente.', 'info');
+      };
+
+      const handleSaveDevice = (deviceData) => {
+        if (editingDevice) {
+          setDevices(devices.map(d => d.id === editingDevice.id ? { ...deviceData, id: editingDevice.id } : d));
+          showToast('Dispositivo actualizado correctamente.');
+        } else {
+          const newDevice = {
+            ...deviceData,
+            cycle,
+            id: `dev-${Date.now()}`,
+            image: deviceData.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'
+          };
+          setDevices([newDevice, ...devices]);
+          showToast('Nuevo dispositivo añadido al inventario.');
+        }
+        setDeviceModalOpen(false);
+        setEditingDevice(null);
+      };
+
+      const weekDates = useMemo(() => getWeekDaysDates(selectedWeekMonday), [selectedWeekMonday]);
+
       return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-slate-100 text-slate-800 font-sans">
+          {/* Toast Notification */}
           {toast && (
-            <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium ${
+            <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-sm font-semibold transition-all ${
               toast.type === 'error' ? 'bg-red-50 text-red-800 border-red-200' :
-              toast.type === 'info' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+              toast.type === 'info' ? 'bg-sky-50 text-sky-800 border-sky-200' :
               'bg-emerald-50 text-emerald-800 border-emerald-200'
             }`}>
-              <i data-lucide={toast.type === 'error' ? 'alert-circle' : toast.type === 'info' ? 'info' : 'check-circle'} className="w-5 h-5"></i>
-              {toast.message}
+              <Icon name={toast.type === 'error' ? 'alert-circle' : toast.type === 'info' ? 'info' : 'check-circle'} className="w-5 h-5 flex-shrink-0" />
+              <span>{toast.message}</span>
             </div>
           )}
 
-          {/* Header */}
-          <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+          {/* Header principal */}
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between h-16 items-center">
-                <div className="flex items-center gap-3">
-                  <div className="bg-indigo-600 text-white p-2.5 rounded-xl shadow-sm">
-                    <i data-lucide="box" className="w-6 h-6"></i>
-                  </div>
-                  <div>
-                    <h1 className="font-bold text-lg text-slate-900 leading-tight">EquipHub</h1>
-                    <p className="text-xs text-slate-500 font-medium">Portal de Reserva de Equipos</p>
-                  </div>
-                </div>
+                <img
+                  src="./assets/logo-pumahue-huechuraba.png"
+                  alt="Colegio Pumahue Huechuraba"
+                  className="block w-32 sm:w-40 lg:w-44 h-auto object-contain flex-shrink-0"
+                />
 
-                <div className="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 gap-1">
+                {/* Navigation Tabs */}
+                <nav className="hidden md:flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                   <button
-                    onClick={() => setCurrentCycle('basica')}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      currentCycle === 'basica' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    onClick={() => setCurrentTab('my-reservations')}
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      currentTab === 'my-reservations'
+                        ? 'bg-white text-indigo-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    Educación Básica
+                    <Icon name="calendar" className="w-4 h-4" />
+                    Horario y Reservas
                   </button>
-                  <button
-                    onClick={() => setCurrentCycle('media')}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      currentCycle === 'media' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    Educación Media
-                  </button>
-                </div>
-
-                <nav className="hidden lg:flex items-center gap-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
                   <button
                     onClick={() => setCurrentTab('catalog')}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                      currentTab === 'catalog' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      currentTab === 'catalog'
+                        ? 'bg-white text-indigo-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <i data-lucide="grid" className="w-4 h-4"></i>
+                    <Icon name="grid" className="w-4 h-4" />
                     Catálogo
                   </button>
                   <button
-                    onClick={() => setCurrentTab('schedule')}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                      currentTab === 'schedule' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    <i data-lucide="calendar" className="w-4 h-4"></i>
-                    Horarios y Planillas
-                  </button>
-                  <button
                     onClick={() => setCurrentTab('admin')}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
-                      currentTab === 'admin' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      currentTab === 'admin'
+                        ? 'bg-white text-indigo-600 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <i data-lucide="settings" className="w-4 h-4"></i>
+                    <Icon name="settings" className="w-4 h-4" />
                     Inventario
                   </button>
                 </nav>
+
+                <div className="flex items-center gap-3">
+                  <div className="hidden lg:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200" role="group" aria-label="Cambiar ciclo">
+                    <button
+                      type="button"
+                      aria-pressed={cycle === 'Basica'}
+                      onClick={() => setCycle('Basica')}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                        cycle === 'Basica' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Educación Básica
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={cycle === 'Media'}
+                      onClick={() => setCycle('Media')}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                        cycle === 'Media' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      Educación Media
+                    </button>
+                  </div>
+                </div>
               </div>
 
+              {/* Mobile Bar */}
               <div className="flex md:hidden border-t border-slate-200 py-2 gap-2 overflow-x-auto">
                 <button
-                  onClick={() => setCurrentCycle(currentCycle === 'basica' ? 'media' : 'basica')}
-                  className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold whitespace-nowrap border border-indigo-200"
+                  onClick={() => setCurrentTab('my-reservations')}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold whitespace-nowrap text-center ${
+                    currentTab === 'my-reservations' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'
+                  }`}
                 >
-                  Ciclo: {currentCycle === 'basica' ? 'Básica' : 'Media'}
+                  Horario y Reservas
                 </button>
                 <button
                   onClick={() => setCurrentTab('catalog')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${currentTab === 'catalog' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold whitespace-nowrap text-center ${
+                    currentTab === 'catalog' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'
+                  }`}
                 >
                   Catálogo
                 </button>
                 <button
-                  onClick={() => setCurrentTab('schedule')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${currentTab === 'schedule' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
-                >
-                  Planilla Horaria
-                </button>
-                <button
                   onClick={() => setCurrentTab('admin')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${currentTab === 'admin' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold whitespace-nowrap text-center ${
+                    currentTab === 'admin' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'
+                  }`}
                 >
                   Inventario
                 </button>
               </div>
+
+              {currentTab !== 'my-reservations' && (
+                <div className="flex lg:hidden items-center justify-between gap-3 border-t border-slate-100 py-2.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Nivel educativo</span>
+                  <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200" role="group" aria-label="Cambiar ciclo">
+                    <button
+                      type="button"
+                      aria-pressed={cycle === 'Basica'}
+                      onClick={() => setCycle('Basica')}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                        cycle === 'Basica' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600'
+                      }`}
+                    >
+                      Básica
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={cycle === 'Media'}
+                      onClick={() => setCycle('Media')}
+                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                        cycle === 'Media' ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-600'
+                      }`}
+                    >
+                      Media
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </header>
 
-          {/* Main Content */}
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            
-            {/* VISTA 1: CATÁLOGO */}
+          {/* Banner de Ciclo Actual */}
+          <div className="bg-indigo-900 text-white py-2 px-4 text-center text-xs font-semibold shadow-inner flex justify-center items-center gap-2">
+            <span className="bg-indigo-500/30 border border-indigo-400/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider text-[10px] font-bold">
+              {cycleLabel}
+            </span>
+            <span>Estás interactuando con el calendario y recursos del ciclo de {cycleLabel}.</span>
+          </div>
+
+          {/* Contenido Principal */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+            {/* PESTAÑA: HORARIO Y RESERVAS */}
+            {currentTab === 'my-reservations' && (
+              <div className="space-y-6">
+                {/* Header Superior Pestaña Horario */}
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-bold text-slate-900">Planilla de Horarios y Reservas — {cycleLabel}</h2>
+                    <p className="text-xs text-slate-500 mt-1">Selecciona el nivel para consultar su planilla y disponibilidad semanal.</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Nivel educativo</span>
+                      <div className="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200" role="group" aria-label="Seleccionar nivel educativo">
+                        <button
+                          type="button"
+                          aria-pressed={cycle === 'Basica'}
+                          onClick={() => setCycle('Basica')}
+                          className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
+                            cycle === 'Basica'
+                              ? 'bg-indigo-600 text-white shadow-sm'
+                              : 'text-slate-600 hover:bg-white hover:text-indigo-700'
+                          }`}
+                        >
+                          <Icon name="graduation-cap" className="w-4 h-4" />
+                          Educación Básica
+                        </button>
+                        <button
+                          type="button"
+                          aria-pressed={cycle === 'Media'}
+                          onClick={() => setCycle('Media')}
+                          className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-bold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${
+                            cycle === 'Media'
+                              ? 'bg-indigo-600 text-white shadow-sm'
+                              : 'text-slate-600 hover:bg-white hover:text-indigo-700'
+                          }`}
+                        >
+                          <Icon name="book-open" className="w-4 h-4" />
+                          Educación Media
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Selector de Modo Vista (Matriz vs Lista) */}
+                    <div className="flex items-center self-start sm:self-auto bg-slate-100 p-1 rounded-xl border border-slate-200">
+                      <button
+                        onClick={() => setViewMode('matrix')}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          viewMode === 'matrix' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        <Icon name="layout-grid" className="w-3.5 h-3.5" />
+                        Planilla Semanal
+                      </button>
+                      <button
+                        onClick={() => setViewMode('list')}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        <Icon name="list" className="w-3.5 h-3.5" />
+                        Lista
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => openBookingModal(devices.find(device => device.cycle === cycle) || devices[0])}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all active:scale-95 whitespace-nowrap"
+                    >
+                      <Icon name="plus" className="w-4 h-4" />
+                      Nueva Reserva
+                    </button>
+                  </div>
+                </div>
+
+                {/* VISTA MATRIZ SEMANAL */}
+                {viewMode === 'matrix' && (
+                  <div className="space-y-8" aria-live="polite">
+                    {cycle === 'Media' ? (
+                      /* MATRICES EDUCACIÓN MEDIA (3 Planillas independientes según requerimiento) */
+                      MEDIA_SECTIONS.map(section => (
+                        <div key={section.id} className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+                          {/* Banner Titulo Planilla */}
+                          <div className="bg-gradient-to-r from-slate-800 to-indigo-950 text-white px-5 py-3 flex justify-between items-center">
+                            <h3 className="font-extrabold text-sm uppercase tracking-wide flex items-center gap-2">
+                              <Icon name={section.id === 'sec-3' ? 'laptop' : 'building-2'} className="w-4 h-4 text-indigo-400" />
+                              {section.title}
+                            </h3>
+                            <span className="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 px-3 py-0.5 rounded-full text-xs font-mono font-bold">
+                              {section.tag}
+                            </span>
+                          </div>
+
+                          {/* Tabla Estilo Excel de la Imagen */}
+                          <div className="overflow-x-auto custom-scrollbar">
+                            <table className="w-full min-w-[850px] text-left border-collapse text-xs">
+                              <thead>
+                                <tr className="bg-indigo-900 text-white font-extrabold border-b border-indigo-950 uppercase text-[11px]">
+                                  <th className="p-2.5 w-28 text-center border-r border-indigo-800">BLOQUE</th>
+                                  <th className="p-2.5 w-16 text-center border-r border-indigo-800">PISO</th>
+                                  <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">LUNES</th>
+                                  <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">MARTES</th>
+                                  <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">MIÉRCOLES</th>
+                                  <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">JUEVES</th>
+                                  <th className="p-2.5 w-1/5 text-center">VIERNES</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-300 font-medium">
+                                {PERIODS_MEDIA.map(period => (
+                                  <tr key={period.id} className="even:bg-slate-50/70 hover:bg-indigo-50/60 transition-colors">
+                                    {/* Celda de Bloque con color oficial */}
+                                    <td className={`p-2 font-bold text-center border-r border-slate-300 ${period.color}`}>
+                                      <div className="text-[11px] leading-tight">{period.start} a {period.end}</div>
+                                    </td>
+                                    {/* Celda de Piso */}
+                                    <td className="p-2 text-center font-bold bg-slate-200 border-r border-slate-300 text-slate-800 text-xs">
+                                      {section.floor}
+                                    </td>
+                                    {/* 5 Celdas de Días (Lunes a Viernes) */}
+                                    {weekDates.map((dateStr, dayIndex) => {
+                                      const matchingRes = reservations.find(r =>
+                                        r.status === 'Active' &&
+                                        r.sectionId === section.id &&
+                                        r.startDate === dateStr &&
+                                        r.periodId === period.id
+                                      );
+
+                                      return (
+                                        <td
+                                          key={dateStr}
+                                          className={`p-2 border-r border-slate-300 text-center transition-all ${
+                                            matchingRes
+                                              ? 'bg-blue-50/90 hover:bg-blue-100 font-semibold text-slate-900'
+                                              : 'bg-emerald-50/50 text-slate-600 text-[11px]'
+                                          }`}
+                                        >
+                                          {matchingRes ? (
+                                            <div className="flex flex-col items-center justify-center">
+                                              <span className="font-bold text-slate-900 leading-tight">{matchingRes.user}</span>
+                                              {matchingRes.purpose && (
+                                                <span className="text-[10px] text-indigo-700 font-normal truncate max-w-[150px]">
+                                                  {matchingRes.purpose.replace(/^\[.*?\]\s*/, '')}
+                                                </span>
+                                              )}
+                                            </div>
+                                          ) : (
+                                            <button
+                                              type="button"
+                                              onClick={() => openBookingModal(
+                                                devices.find(d => d.location === section.title) || devices[0],
+                                                { sectionId: section.id, date: dateStr, period }
+                                              )}
+                                              aria-label={`Reservar ${section.title}, ${period.label}, ${dateStr}`}
+                                              className="inline-flex items-center gap-1 rounded px-1 py-1 text-emerald-800 font-bold text-[10px] hover:text-emerald-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                            >
+                                              <Icon name="plus-circle" className="w-3 h-3" />
+                                              Disponible · Reservar
+                                            </button>
+                                          )}
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      /* MATRIZ EDUCACIÓN BÁSICA */
+                      <div className="bg-white rounded-2xl border border-slate-300 shadow-sm overflow-hidden">
+                        <div className="bg-gradient-to-r from-slate-800 to-indigo-950 text-white px-5 py-3 flex justify-between items-center">
+                          <h3 className="font-extrabold text-sm uppercase tracking-wide">Matriz horaria de recursos — Educación Básica</h3>
+                          <span className="text-xs bg-indigo-500/30 text-indigo-100 border border-indigo-400/30 px-2.5 py-0.5 rounded-full font-mono">Pisos 1, 2 y 3</span>
+                        </div>
+                        <div className="overflow-x-auto custom-scrollbar">
+                          <table className="w-full min-w-[760px] text-left border-collapse text-xs">
+                            <thead>
+                              <tr className="bg-indigo-900 text-white font-extrabold text-[11px] uppercase">
+                                <th className="p-2.5 w-28 text-center border-r border-indigo-800">BLOQUE</th>
+                                <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">LUNES</th>
+                                <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">MARTES</th>
+                                <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">MIÉRCOLES</th>
+                                <th className="p-2.5 w-1/5 text-center border-r border-indigo-800">JUEVES</th>
+                                <th className="p-2.5 w-1/5 text-center">VIERNES</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-300">
+                              {PERIODS_BASICA.map(period => (
+                                <tr key={period.id} className="even:bg-slate-50/70 hover:bg-indigo-50/60 transition-colors">
+                                  <td className="p-2 font-bold text-center border-r border-slate-300 bg-amber-100 text-amber-950 text-[11px]">
+                                    {period.start} - {period.end}
+                                  </td>
+                                  {weekDates.map(dateStr => {
+                                    const res = reservations.find(r => r.cycle === 'Basica' && r.startDate === dateStr && r.periodId === period.id && r.status === 'Active');
+                                    return (
+                                      <td
+                                        key={dateStr}
+                                        className={`p-2 border-r border-slate-300 text-center font-medium transition-colors ${
+                                        res
+                                          ? 'bg-blue-50/90 text-slate-900'
+                                          : 'bg-emerald-50/50 text-slate-600'
+                                        }`}
+                                      >
+                                        {res ? (
+                                          <div className="flex flex-col items-center">
+                                            <span className="font-bold text-slate-900">{res.user}</span>
+                                            {res.purpose && <span className="text-[10px] text-indigo-700 truncate max-w-[150px]">{res.purpose.replace(/^\[.*?\]\s*/, '')}</span>}
+                                          </div>
+                                        ) : (
+                                          <button
+                                            type="button"
+                                            onClick={() => openBookingModal(
+                                              devices.find(device => device.cycle === 'Basica') || devices[0],
+                                              { date: dateStr, period }
+                                            )}
+                                            aria-label={`Reservar Educación Básica, ${period.label}, ${dateStr}`}
+                                            className="inline-flex items-center gap-1 rounded px-1 py-1 text-emerald-800 font-bold text-[10px] hover:text-emerald-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                                          >
+                                            <Icon name="plus-circle" className="w-3 h-3" />
+                                            Disponible · Reservar
+                                          </button>
+                                        )}
+                                      </td>
+                                    );
+                                  })}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* VISTA LISTA DE RESERVAS */}
+                {viewMode === 'list' && (
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div className="divide-y divide-slate-100">
+                      {reservations.filter(r => r.cycle === cycle).map(res => (
+                        <div key={res.id} className="p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:bg-slate-50">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900">{res.deviceName}</span>
+                              <span className="text-xs font-mono bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold">{res.assetTag}</span>
+                              <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                                res.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500'
+                              }`}>
+                                {res.status === 'Active' ? 'Activa' : 'Cancelada'}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-600 flex gap-4">
+                              <span><strong>Docente:</strong> {res.user}</span>
+                              <span><strong>Fecha:</strong> {res.startDate} ({res.startTime} - {res.endTime})</span>
+                            </div>
+                            <p className="text-xs text-slate-500">{res.purpose}</p>
+                          </div>
+                          {res.status === 'Active' && (
+                            <button
+                              onClick={() => handleCancelReservation(res.id)}
+                              className="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors"
+                            >
+                              Cancelar
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* PESTAÑA: CATÁLOGO */}
             {currentTab === 'catalog' && (
               <div className="space-y-6">
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
                   <div className="relative flex-1">
-                    <i data-lucide="search" className="w-5 h-5 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <Icon name="search" className="w-5 h-5 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400" />
                     <input
                       type="text"
-                      placeholder="Buscar por nombre, modelo o código..."
+                      placeholder="Buscar equipo o sala..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                      className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 text-sm"
                     />
                   </div>
 
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+                  <div className="flex items-center gap-2 overflow-x-auto">
                     {CATEGORIES.map(cat => (
                       <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                          selectedCategory === cat ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        className={`px-4 py-2 rounded-xl text-xs font-bold ${
+                          selectedCategory === cat ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
                         }`}
                       >
                         {cat}
@@ -324,42 +1013,24 @@
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredDevices.map(device => (
-                    <div key={device.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow group">
-                      <div className="relative h-48 bg-slate-100 overflow-hidden">
-                        <img src={device.image} alt={device.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.target.src = 'https://placehold.co/600x400/e2e8f0/475569?text=Sin+Imagen'; }} />
+                    <div key={device.id} className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col">
+                      <div className="h-44 bg-slate-100 relative">
+                        <img src={device.image} alt={device.name} className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://placehold.co/600x400'; }} />
                         <div className="absolute top-3 right-3">{getStatusBadge(device.status)}</div>
-                        <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-mono px-2.5 py-1 rounded-md">{device.assetTag}</div>
                       </div>
-
-                      <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">
-                            <i data-lucide="laptop" className="w-3.5 h-3.5"></i>
-                            <span>{device.category}</span>
-                          </div>
-                          <h3 className="font-bold text-slate-900 text-base mb-1">{device.name}</h3>
-                          <p className="text-xs text-slate-500 mb-3">{device.model}</p>
-                          
-                          <div className="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
-                            <div className="flex items-center gap-2">
-                              <i data-lucide="map-pin" className="w-3.5 h-3.5 text-slate-400"></i>
-                              <span>{device.location}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <i data-lucide="cpu" className="w-3.5 h-3.5 text-slate-400"></i>
-                              <span className="truncate">{device.specs}</span>
-                            </div>
-                          </div>
+                          <span className="text-xs font-extrabold text-indigo-600 uppercase">{device.category}</span>
+                          <h3 className="font-bold text-slate-900 text-base">{device.name}</h3>
+                          <p className="text-xs text-slate-500">{device.specs}</p>
                         </div>
-
                         <button
-                          onClick={() => { setSelectedDeviceForBooking(device); setBookingModalOpen(true); }}
-                          className="w-full py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all"
+                          onClick={() => openBookingModal(device)}
+                          className="w-full py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
                         >
-                          <i data-lucide="calendar-plus" className="w-4 h-4"></i>
-                          Reservar Equipo
+                          Reservar para {cycleLabel}
                         </button>
                       </div>
                     </div>
@@ -368,181 +1039,53 @@
               </div>
             )}
 
-            {/* VISTA 2: HORARIOS Y PLANILLAS */}
-            {currentTab === 'schedule' && (
-              <div className="space-y-8">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-900">
-                      Planillas de Horarios - {currentCycle === 'basica' ? 'Educación Básica' : 'Educación Media'}
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {currentCycle === 'basica' ? 'Distribución por Pisos (1, 2 y 3)' : 'Salas de Profesores, Ciencias y Carro de Tecnología'}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl">
-                    <button
-                      onClick={() => setCurrentCycle('basica')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${currentCycle === 'basica' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600'}`}
-                    >
-                      Básica
-                    </button>
-                    <button
-                      onClick={() => setCurrentCycle('media')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${currentCycle === 'media' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600'}`}
-                    >
-                      Media
-                    </button>
-                  </div>
-                </div>
-
-                {/* PLANILLAS EDUCACIÓN BÁSICA */}
-                {currentCycle === 'basica' && (
-                  <div className="space-y-10">
-                    {[
-                      { title: 'PRIMER PISO', piso: 1, blocks: ['08:15 a 09:00', '09:00 a 09:45', '10:00 a 10:45', '10:45 a 11:30', '11:45 a 12:30', '12:30 a 13:15', '14:00 a 14:45', '14:45 a 15:30', '15:30 a 16:20'], dataKey: 'p1' },
-                      { title: 'SEGUNDO PISO', piso: 2, blocks: ['08:15 a 09:00', '09:00 a 09:45', '10:00 a 10:45', '10:45 a 11:30', '11:45 a 12:30', '12:30 a 13:15', '13:15 a 14:00', '14:45 a 15:30', '15:30 a 16:20'], dataKey: 'p2' },
-                      { title: 'TERCER PISO', piso: 3, blocks: ['08:15 a 09:00', '09:00 a 09:45', '10:00 a 10:45', '10:45 a 11:30', '11:45 a 12:30', '12:30 a 13:15', '13:15 a 14:00', '14:00 a 14:45', '14:45 a 15:30', '15:30 a 16:20'], dataKey: 'p3' }
-                    ].map(table => (
-                      <div key={table.piso} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                        <div className="bg-slate-900 text-white px-6 py-3 font-bold text-sm tracking-wide">
-                          PISO {table.piso} - SALA DE PROFESORES Y EQUIPOS
-                        </div>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs text-slate-700">
-                            <thead className="bg-slate-100 font-semibold border-b border-slate-200 uppercase">
-                              <tr>
-                                <th className="p-3.5 border-r border-slate-200">Bloque</th>
-                                <th className="p-3.5 border-r border-slate-200 text-center">Piso</th>
-                                <th className="p-3.5 border-r border-slate-200">Lunes</th>
-                                <th className="p-3.5 border-r border-slate-200">Martes</th>
-                                <th className="p-3.5 border-r border-slate-200">Miércoles</th>
-                                <th className="p-3.5 border-r border-slate-200">Jueves</th>
-                                <th className="p-3.5">Viernes</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                              {table.blocks.map((b, idx) => {
-                                const rowInfo = basicaData[table.dataKey][b] || {};
-                                const bgBlock = idx < 2 ? 'bg-amber-100' : idx < 5 ? 'bg-blue-100' : 'bg-orange-100';
-                                return (
-                                  <tr key={b} className="hover:bg-slate-50">
-                                    <td className={`p-3 font-bold border-r border-slate-200 ${bgBlock}`}>{b}</td>
-                                    <td className="p-3 text-center font-bold border-r border-slate-200">{table.piso}</td>
-                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.lunes || ''}</td>
-                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.martes || ''}</td>
-                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.miercoles || ''}</td>
-                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.jueves || ''}</td>
-                                    <td className="p-3 font-medium text-slate-800">{rowInfo.viernes || ''}</td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* PLANILLAS EDUCACIÓN MEDIA */}
-                {currentCycle === 'media' && (
-                  <div className="space-y-10">
-                    {[
-                      { title: 'PRIMER PISO - SALA PROFESORES', piso: 1, dataKey: 'salaProf' },
-                      { title: 'SEGUNDO PISO - SALA CIENCIAS', piso: 2, dataKey: 'salaCiencias' },
-                      { title: 'CARRO NOTEBOOK - SALA TECNOLOGÍA', piso: 2, dataKey: 'carroTecno' }
-                    ].map(table => {
-                      const mediaBlocks = ['08:10 a 08:55', '08:55 a 09:40', '09:40 a 10:25', '10:40 a 11:25', '11:25 a 12:10', '12:25 a 13:10', '13:10 a 13:55', '14:35 a 15:20', '15:20 a 16:05', '16:05 a 16:50'];
-                      return (
-                        <div key={table.title} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                          <div className="bg-indigo-900 text-white px-6 py-3 font-bold text-sm tracking-wide">
-                            {table.title}
-                          </div>
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-left text-xs text-slate-700">
-                              <thead className="bg-slate-100 font-semibold border-b border-slate-200 uppercase">
-                                <tr>
-                                  <th className="p-3.5 border-r border-slate-200">Bloque</th>
-                                  <th className="p-3.5 border-r border-slate-200 text-center">Piso</th>
-                                  <th className="p-3.5 border-r border-slate-200">Lunes</th>
-                                  <th className="p-3.5 border-r border-slate-200">Martes</th>
-                                  <th className="p-3.5 border-r border-slate-200">Miércoles</th>
-                                  <th className="p-3.5 border-r border-slate-200">Jueves</th>
-                                  <th className="p-3.5">Viernes</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-100">
-                                {mediaBlocks.map((b, idx) => {
-                                  const rowInfo = mediaData[table.dataKey][b] || {};
-                                  const bgBlock = idx < 2 ? 'bg-amber-100' : idx < 5 ? 'bg-blue-100' : 'bg-orange-100';
-                                  return (
-                                    <tr key={b} className="hover:bg-slate-50">
-                                      <td className={`p-3 font-bold border-r border-slate-200 ${bgBlock}`}>{b}</td>
-                                      <td className="p-3 text-center font-bold border-r border-slate-200">{table.piso}</td>
-                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.lunes || ''}</td>
-                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.martes || ''}</td>
-                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.miercoles || ''}</td>
-                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.jueves || ''}</td>
-                                      <td className="p-3 font-medium text-slate-800">{rowInfo.viernes || ''}</td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* VISTA 3: INVENTARIO Y GESTIÓN */}
+            {/* PESTAÑA: INVENTARIO */}
             {currentTab === 'admin' && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-900">Inventario de Dispositivos</h2>
-                    <p className="text-xs text-slate-500">Administra el inventario asignado al colegio.</p>
-                  </div>
+                  <h2 className="text-lg font-bold text-slate-900">Inventario Tecnológico — {cycleLabel}</h2>
                   <button
                     onClick={() => { setEditingDevice(null); setDeviceModalOpen(true); }}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-sm flex items-center gap-2 transition-colors"
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2"
                   >
-                    <i data-lucide="plus" className="w-4 h-4"></i>
-                    Agregar Dispositivo
+                    <Icon name="plus" className="w-4 h-4" />
+                    Nuevo Dispositivo
                   </button>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-slate-600">
-                      <thead className="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
-                        <tr>
-                          <th className="p-4">Dispositivo</th>
-                          <th className="p-4">Categoría</th>
-                          <th className="p-4">Código / Tag</th>
-                          <th className="p-4">Ubicación</th>
-                          <th className="p-4">Estado</th>
+                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto custom-scrollbar">
+                  <table className="w-full min-w-[760px] text-left text-xs">
+                    <thead className="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
+                      <tr>
+                        <th className="p-4">Nombre</th>
+                        <th className="p-4">Categoría</th>
+                        <th className="p-4">Código</th>
+                        <th className="p-4">Ubicación</th>
+                        <th className="p-4">Estado</th>
+                        <th className="p-4 text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {devices.filter(dev => !dev.cycle || dev.cycle === cycle).map(dev => (
+                        <tr key={dev.id} className="hover:bg-slate-50">
+                          <td className="p-4 font-bold text-slate-900">{dev.name}</td>
+                          <td className="p-4">{dev.category}</td>
+                          <td className="p-4 font-mono font-bold">{dev.assetTag}</td>
+                          <td className="p-4">{dev.location}</td>
+                          <td className="p-4">{getStatusBadge(dev.status)}</td>
+                          <td className="p-4 text-right">
+                            <button
+                              onClick={() => { setEditingDevice(dev); setDeviceModalOpen(true); }}
+                              className="text-indigo-600 hover:underline font-bold"
+                            >
+                              Editar
+                            </button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100">
-                        {devices.map(device => (
-                          <tr key={device.id} className="hover:bg-slate-50">
-                            <td className="p-4 font-semibold text-slate-900 flex items-center gap-3">
-                              <img src={device.image} className="w-8 h-8 rounded-lg object-cover bg-slate-100" onError={(e) => e.target.src='https://placehold.co/100x100'} />
-                              {device.name}
-                            </td>
-                            <td className="p-4 font-medium">{device.category}</td>
-                            <td className="p-4 font-mono">{device.assetTag}</td>
-                            <td className="p-4">{device.location}</td>
-                            <td className="p-4">{getStatusBadge(device.status)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                      ))}
+                    </tbody>
+                  </table>
                   </div>
                 </div>
               </div>
@@ -550,62 +1093,209 @@
           </main>
 
           {/* Modal de Reserva */}
-          {bookingModalOpen && selectedDeviceForBooking && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-              <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-                <div className="flex justify-between items-center border-b pb-3">
-                  <h3 className="font-bold text-base text-slate-900">Reservar {selectedDeviceForBooking.name}</h3>
-                  <button onClick={() => setBookingModalOpen(false)} className="text-slate-400 hover:text-slate-600">
-                    <i data-lucide="x" className="w-5 h-5"></i>
-                  </button>
-                </div>
-                <form onSubmit={handleBookingSubmit} className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Tu Nombre</label>
-                    <input 
-                      type="text" 
-                      required 
-                      placeholder="Ej. Juan Pérez" 
-                      value={bookingName}
-                      onChange={(e) => setBookingName(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Correo Institucional</label>
-                    <input 
-                      type="email" 
-                      required 
-                      placeholder="ej. jperez@colegio.cl" 
-                      value={bookingEmail}
-                      onChange={(e) => setBookingEmail(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Motivo / Asignatura</label>
-                    <textarea 
-                      required 
-                      rows="2" 
-                      placeholder="Ej: Uso de app para Geometría..." 
-                      value={bookingReason}
-                      onChange={(e) => setBookingReason(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none"
-                    ></textarea>
-                  </div>
-                  <div className="pt-2 flex justify-end gap-2">
-                    <button type="button" onClick={() => setBookingModalOpen(false)} className="px-4 py-2 text-xs font-semibold text-slate-600">Cancelar</button>
-                    <button type="submit" className="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition-colors">Confirmar Reserva</button>
-                  </div>
-                </form>
-              </div>
-            </div>
+          {bookingModalOpen && (
+            <BookingModal
+              cycle={cycle}
+              device={selectedDeviceForBooking}
+              presetData={presetBookingData}
+              existingReservations={reservations}
+              onClose={() => setBookingModalOpen(false)}
+              onSubmit={handleCreateBooking}
+            />
+          )}
+
+          {/* Modal Formulario Dispositivo */}
+          {deviceModalOpen && (
+            <DeviceFormModal
+              device={editingDevice}
+              onClose={() => setDeviceModalOpen(false)}
+              onSubmit={handleSaveDevice}
+            />
           )}
         </div>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    // --- Componente Modal Reserva Ajustado a Ciclo ---
+    function BookingModal({ cycle, device, presetData, onClose, onSubmit, existingReservations = [] }) {
+      const [user, setUser] = useState('');
+      const [purpose, setPurpose] = useState('');
+      const periods = cycle === 'Media' ? PERIODS_MEDIA : PERIODS_BASICA;
+
+      const [selectedDate, setSelectedDate] = useState(presetData?.date || currentWeekDates[0]);
+      const [selectedPeriod, setSelectedPeriod] = useState(presetData?.period || periods[0]);
+      const [selectedSection, setSelectedSection] = useState(presetData?.sectionId || 'sec-1');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!user.trim()) return;
+
+        onSubmit({
+          user,
+          sectionId: selectedSection,
+          startDate: selectedDate,
+          endDate: selectedDate,
+          startTime: selectedPeriod.start,
+          endTime: selectedPeriod.end,
+          periodId: selectedPeriod.id,
+          purpose: `[${selectedPeriod.label}] ${purpose || 'Clase regular'}`
+        });
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="font-extrabold text-base text-slate-900">Reserva de Horario — {cycle === 'Media' ? 'Educación Media' : 'Educación Básica'}</h3>
+                <p className="text-xs text-slate-500">{device?.name || 'Recurso Tecnológico'}</p>
+              </div>
+              <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+                <Icon name="x" className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Nombre del Profesor / Solicitante</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Constanza Pozo"
+                  value={user}
+                  onChange={(e) => setUser(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 font-medium"
+                />
+              </div>
+
+              {cycle === 'Media' && (
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Ubicación / Planilla de Media</label>
+                  <select
+                    value={selectedSection}
+                    onChange={(e) => setSelectedSection(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold"
+                  >
+                    {MEDIA_SECTIONS.map(s => (
+                      <option key={s.id} value={s.id}>{s.title}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Fecha</label>
+                  <input
+                    type="date"
+                    required
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Bloque Pedagógico</label>
+                  <select
+                    value={selectedPeriod.id}
+                    onChange={(e) => setSelectedPeriod(periods.find(p => p.id === e.target.value))}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-semibold"
+                  >
+                    {periods.map(p => (
+                      <option key={p.id} value={p.id}>{p.label} ({p.start} - {p.end})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Asignatura / Actividad</label>
+                <textarea
+                  rows="2"
+                  placeholder="Ej: Pruebas de Salud Mental 15 iPads..."
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 font-medium"
+                ></textarea>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t">
+                <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-100">
+                  Cancelar
+                </button>
+                <button type="submit" className="px-4 py-2 rounded-xl font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm">
+                  Confirmar Reserva
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // --- Componente Modal Formulario Dispositivo ---
+    function DeviceFormModal({ device, onClose, onSubmit }) {
+      const [formData, setFormData] = useState(device || {
+        name: '',
+        category: 'Notebooks',
+        model: '',
+        assetTag: '',
+        status: 'Available',
+        location: '',
+        specs: '',
+        image: ''
+      });
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <h3 className="font-extrabold text-base text-slate-900">{device ? 'Editar Dispositivo' : 'Nuevo Dispositivo'}</h3>
+            <form onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold mb-1">Nombre</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full p-2 rounded-xl border"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold mb-1">Categoría</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full p-2 rounded-xl border"
+                  >
+                    {CATEGORIES.filter(c => c !== 'Todos').map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold mb-1">Código</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.assetTag}
+                    onChange={(e) => setFormData({ ...formData, assetTag: e.target.value })}
+                    className="w-full p-2 rounded-xl border font-mono"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-3 border-t">
+                <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl font-bold text-slate-600">Cancelar</button>
+                <button type="submit" className="px-4 py-2 rounded-xl font-bold bg-indigo-600 text-white">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // Render App
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
