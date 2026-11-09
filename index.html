@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Reserva de Dispositivos - EquipHub</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const INITIAL_DEVICES = [
+      { id: 'dev-1', name: 'Notebook Institucional', category: 'Notebook', model: 'Lenovo ThinkPad', assetTag: 'NB-001', status: 'Available', location: 'Oficina TI - Estante 1', specs: 'Core i7, 16GB RAM, 512GB SSD', image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80' },
+      { id: 'dev-2', name: 'iPad Pro 12.9"', category: 'iPads', model: 'Wi-Fi 256GB + Pencil', assetTag: 'PAD-001', status: 'Available', location: 'Sala de Profesores', specs: 'Pantalla Liquid Retina, Chip M2', image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=600&q=80' },
+      { id: 'dev-3', name: 'Apple TV 4K', category: 'AppleTV', model: '3ra Gen - 128GB', assetTag: 'ATV-001', status: 'Available', location: 'Auditorio', specs: 'Soporte 4K HDR, Dolby Vision', image: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=600&q=80' }
+    ];
+
+    const CATEGORIES = ['Todos', 'iPads', 'Notebook', 'AppleTV'];
+
+    function App() {
+      const [devices, setDevices] = useState(INITIAL_DEVICES);
+      const [currentCycle, setCurrentCycle] = useState('basica'); 
+      const [currentTab, setCurrentTab] = useState('catalog');
+      const [selectedCategory, setSelectedCategory] = useState('Todos');
+      const [searchQuery, setSearchQuery] = useState('');
+      
+      const [bookingModalOpen, setBookingModalOpen] = useState(false);
+      const [selectedDeviceForBooking, setSelectedDeviceForBooking] = useState(null);
+      
+      // Estados para el formulario de reserva
+      const [bookingName, setBookingName] = useState('');
+      const [bookingEmail, setBookingEmail] = useState('');
+      const [bookingReason, setBookingReason] = useState('');
+
+      const [deviceModalOpen, setDeviceModalOpen] = useState(false);
+      const [editingDevice, setEditingDevice] = useState(null);
+      const [toast, setToast] = useState(null);
+
+      const [basicaData, setBasicaData] = useState({
+        p1: {
+          '08:15 a 09:00': { martes: 'Felipe C feria salud mental 15 iPads' },
+          '09:00 a 09:45': { martes: 'Felipe C feria salud mental 15 iPads' },
+          '10:00 a 10:45': { martes: 'Felipe C feria salud mental 15 iPads' },
+          '10:45 a 11:30': { martes: 'Felipe C feria salud mental 15 iPads' },
+          '11:45 a 12:30': { jueves: '2A Felipe', viernes: 'Thiare 6°A' },
+          '12:30 a 13:15': { jueves: '2A Felipe' },
+          '14:00 a 14:45': { jueves: 'Thiare 6°A' },
+          '14:45 a 15:30': { jueves: 'Thiare 6°A' }
+        },
+        p2: {
+          '08:15 a 09:00': { lunes: 'Margarita 5B', jueves: 'Margarita 5A', viernes: '4to C Evelyn' },
+          '09:00 a 09:45': { lunes: 'Margarita 5B', jueves: 'Margarita 5A', viernes: '4to C Evelyn' },
+          '10:00 a 10:45': { martes: 'Margarita 5A', jueves: 'Margarita 5B', viernes: 'Margarita 5B' },
+          '10:45 a 11:30': { martes: 'Margarita 5A', jueves: 'Margarita 5B', viernes: 'Margarita 5B' },
+          '11:45 a 12:30': { martes: '4to D Giannina', miercoles: 'Margarita 5B', viernes: 'Macarena 4D' },
+          '12:30 a 13:15': { viernes: 'Margarita 5A' },
+          '13:15 a 14:00': { lunes: '4to C Evelyn', martes: 'MACARENA 4C', miercoles: 'Margarita 5B', viernes: 'Macarena 4A' },
+          '14:45 a 15:30': { martes: '4to E Giannina', jueves: 'Margarita 5A' }
+        },
+        p3: {
+          '08:15 a 09:00': { lunes: 'Mariela 5C', martes: 'Margarita 5C', miercoles: 'Margarita 6°E', jueves: 'Felipe C 3ro A', viernes: 'Renata 3ro B' },
+          '09:00 a 09:45': { lunes: 'Mariela 5C', martes: 'Margarita 5C', miercoles: 'Margarita 6°E', jueves: 'Felipe C 3ro A', viernes: 'Renata 3ro B' },
+          '10:00 a 10:45': { lunes: 'Mariela 5C', martes: 'Thiare 6°C' },
+          '10:45 a 11:30': { lunes: 'Mariela 5C', martes: 'Thiare 6°C', miercoles: 'Thiare 6°D' },
+          '11:45 a 12:30': { lunes: 'Margarita 6toE', martes: 'Thiare 6°B', miercoles: 'Thiare 5°E', jueves: 'Margarita 5D' },
+          '12:30 a 13:15': { viernes: 'Mariela 6D' },
+          '13:15 a 14:00': { lunes: 'Margarita 5D', martes: 'Margarita 6E', jueves: 'Margarita 5C', viernes: 'Mariela 6D' },
+          '14:00 a 14:45': { martes: 'Thiare 5°E', miercoles: 'Thiare 6°B', jueves: 'Margarita 5C' },
+          '14:45 a 15:30': { lunes: 'Andrea 5D', martes: 'Thiare 5°E', miercoles: 'Thiare 6°B' },
+          '15:30 a 16:20': { lunes: 'Margarita 5C' }
+        }
+      });
+
+      const [mediaData, setMediaData] = useState({
+        salaProf: {
+          '08:10 a 08:55': { martes: 'Constanza Pozo', viernes: 'Constanza Pozo' },
+          '08:55 a 09:40': { martes: 'Constanza Pozo' },
+          '09:40 a 10:25': { lunes: 'Valentina Young', martes: 'Javier Rodríguez' },
+          '10:40 a 11:25': { lunes: 'Constanza Pozo', jueves: 'Constanza Pozo' },
+          '11:25 a 12:10': { lunes: 'Constanza Pozo', jueves: 'Constanza Pozo' },
+          '12:25 a 13:10': { martes: 'Constanza Pozo', jueves: 'Evelyn Orellana' },
+          '13:10 a 13:55': { martes: 'Constanza Pozo', jueves: 'Evelyn Orellana' },
+          '14:35 a 15:20': { lunes: 'Pamela Castillo', miercoles: 'Carla Leiva', jueves: 'Javier Rodríguez' },
+          '15:20 a 16:05': { lunes: 'Andrea Vilca', miercoles: 'Carla Leiva' },
+          '16:05 a 16:50': { lunes: 'Javier Rodríguez' }
+        },
+        salaCiencias: {
+          '08:10 a 08:55': { martes: 'Javier Rodríguez' },
+          '08:55 a 09:40': { martes: 'Javier Rodríguez' },
+          '09:40 a 10:25': { lunes: 'Andrea Vilca', miercoles: 'Romina Galaz' },
+          '10:40 a 11:25': { miercoles: 'Romina Galaz' },
+          '11:25 a 12:10': { lunes: 'Javier Rodríguez', miercoles: 'Alejandra Riveros' },
+          '12:25 a 13:10': { jueves: 'Carolina Sánchez' },
+          '13:10 a 13:55': { jueves: 'Javier Rodríguez', viernes: 'Carolina Sánchez' },
+          '14:35 a 15:20': { jueves: 'Javier Rodríguez' }
+        },
+        carroTecno: {
+          '08:10 a 08:55': { lunes: 'Gabriel Schoess' },
+          '08:55 a 09:40': { lunes: 'Gabriel Schoess' },
+          '09:40 a 10:25': { lunes: 'Gabriel Schoess', jueves: 'Valentina Young' },
+          '10:40 a 11:25': { lunes: 'Gabriel Schoess', jueves: 'Valentina Young' },
+          '11:25 a 12:10': { lunes: 'Gabriel Schoess' },
+          '12:25 a 13:10': { lunes: 'Jacqueline Inostroza' },
+          '13:10 a 13:55': { lunes: 'Jacqueline Inostroza' },
+          '14:35 a 15:20': { lunes: 'Javiera Catrón' },
+          '15:20 a 16:05': { lunes: 'Javiera Catrón' },
+          '16:05 a 16:50': { lunes: 'Gabriel Schoess' }
+        }
+      });
+
+      const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 4000);
+      };
+
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+
+      const handleBookingSubmit = (e) => {
+        e.preventDefault();
+        showToast(`¡Reserva confirmada para ${bookingName}!`);
+        setBookingModalOpen(false);
+        setBookingName('');
+        setBookingEmail('');
+        setBookingReason('');
+      };
+
+      const filteredDevices = useMemo(() => {
+        return devices.filter(device => {
+          const matchesCategory = selectedCategory === 'Todos' || device.category === selectedCategory;
+          const matchesSearch = device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                device.assetTag.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                device.model.toLowerCase().includes(searchQuery.toLowerCase());
+          return matchesCategory && matchesSearch;
+        });
+      }, [devices, selectedCategory, searchQuery]);
+
+      const getStatusBadge = (status) => {
+        switch (status) {
+          case 'Available':
+            return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"><span className="w-2 h-2 rounded-full bg-emerald-500"></span>Disponible</span>;
+          case 'Reserved':
+            return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200"><span className="w-2 h-2 rounded-full bg-amber-500"></span>Reservado</span>;
+          case 'Maintenance':
+            return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200"><span className="w-2 h-2 rounded-full bg-rose-500"></span>Mantenimiento</span>;
+          default:
+            return null;
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {toast && (
+            <div className={`fixed top-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium ${
+              toast.type === 'error' ? 'bg-red-50 text-red-800 border-red-200' :
+              toast.type === 'info' ? 'bg-blue-50 text-blue-800 border-blue-200' :
+              'bg-emerald-50 text-emerald-800 border-emerald-200'
+            }`}>
+              <i data-lucide={toast.type === 'error' ? 'alert-circle' : toast.type === 'info' ? 'info' : 'check-circle'} className="w-5 h-5"></i>
+              {toast.message}
+            </div>
+          )}
+
+          {/* Header */}
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between h-16 items-center">
+                <div className="flex items-center gap-3">
+                  <div className="bg-indigo-600 text-white p-2.5 rounded-xl shadow-sm">
+                    <i data-lucide="box" className="w-6 h-6"></i>
+                  </div>
+                  <div>
+                    <h1 className="font-bold text-lg text-slate-900 leading-tight">EquipHub</h1>
+                    <p className="text-xs text-slate-500 font-medium">Portal de Reserva de Equipos</p>
+                  </div>
+                </div>
+
+                <div className="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 gap-1">
+                  <button
+                    onClick={() => setCurrentCycle('basica')}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      currentCycle === 'basica' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Educación Básica
+                  </button>
+                  <button
+                    onClick={() => setCurrentCycle('media')}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      currentCycle === 'media' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Educación Media
+                  </button>
+                </div>
+
+                <nav className="hidden lg:flex items-center gap-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                  <button
+                    onClick={() => setCurrentTab('catalog')}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      currentTab === 'catalog' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <i data-lucide="grid" className="w-4 h-4"></i>
+                    Catálogo
+                  </button>
+                  <button
+                    onClick={() => setCurrentTab('schedule')}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      currentTab === 'schedule' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <i data-lucide="calendar" className="w-4 h-4"></i>
+                    Horarios y Planillas
+                  </button>
+                  <button
+                    onClick={() => setCurrentTab('admin')}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      currentTab === 'admin' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <i data-lucide="settings" className="w-4 h-4"></i>
+                    Inventario
+                  </button>
+                </nav>
+              </div>
+
+              <div className="flex md:hidden border-t border-slate-200 py-2 gap-2 overflow-x-auto">
+                <button
+                  onClick={() => setCurrentCycle(currentCycle === 'basica' ? 'media' : 'basica')}
+                  className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold whitespace-nowrap border border-indigo-200"
+                >
+                  Ciclo: {currentCycle === 'basica' ? 'Básica' : 'Media'}
+                </button>
+                <button
+                  onClick={() => setCurrentTab('catalog')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${currentTab === 'catalog' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                >
+                  Catálogo
+                </button>
+                <button
+                  onClick={() => setCurrentTab('schedule')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${currentTab === 'schedule' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                >
+                  Planilla Horaria
+                </button>
+                <button
+                  onClick={() => setCurrentTab('admin')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${currentTab === 'admin' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700'}`}
+                >
+                  Inventario
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            {/* VISTA 1: CATÁLOGO */}
+            {currentTab === 'catalog' && (
+              <div className="space-y-6">
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
+                  <div className="relative flex-1">
+                    <i data-lucide="search" className="w-5 h-5 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input
+                      type="text"
+                      placeholder="Buscar por nombre, modelo o código..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+                    {CATEGORIES.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                          selectedCategory === cat ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredDevices.map(device => (
+                    <div key={device.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow group">
+                      <div className="relative h-48 bg-slate-100 overflow-hidden">
+                        <img src={device.image} alt={device.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.target.src = 'https://placehold.co/600x400/e2e8f0/475569?text=Sin+Imagen'; }} />
+                        <div className="absolute top-3 right-3">{getStatusBadge(device.status)}</div>
+                        <div className="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-mono px-2.5 py-1 rounded-md">{device.assetTag}</div>
+                      </div>
+
+                      <div className="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1">
+                            <i data-lucide="laptop" className="w-3.5 h-3.5"></i>
+                            <span>{device.category}</span>
+                          </div>
+                          <h3 className="font-bold text-slate-900 text-base mb-1">{device.name}</h3>
+                          <p className="text-xs text-slate-500 mb-3">{device.model}</p>
+                          
+                          <div className="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+                            <div className="flex items-center gap-2">
+                              <i data-lucide="map-pin" className="w-3.5 h-3.5 text-slate-400"></i>
+                              <span>{device.location}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <i data-lucide="cpu" className="w-3.5 h-3.5 text-slate-400"></i>
+                              <span className="truncate">{device.specs}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => { setSelectedDeviceForBooking(device); setBookingModalOpen(true); }}
+                          className="w-full py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm transition-all"
+                        >
+                          <i data-lucide="calendar-plus" className="w-4 h-4"></i>
+                          Reservar Equipo
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* VISTA 2: HORARIOS Y PLANILLAS */}
+            {currentTab === 'schedule' && (
+              <div className="space-y-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      Planillas de Horarios - {currentCycle === 'basica' ? 'Educación Básica' : 'Educación Media'}
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {currentCycle === 'basica' ? 'Distribución por Pisos (1, 2 y 3)' : 'Salas de Profesores, Ciencias y Carro de Tecnología'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl">
+                    <button
+                      onClick={() => setCurrentCycle('basica')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${currentCycle === 'basica' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600'}`}
+                    >
+                      Básica
+                    </button>
+                    <button
+                      onClick={() => setCurrentCycle('media')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${currentCycle === 'media' ? 'bg-indigo-600 text-white shadow' : 'text-slate-600'}`}
+                    >
+                      Media
+                    </button>
+                  </div>
+                </div>
+
+                {/* PLANILLAS EDUCACIÓN BÁSICA */}
+                {currentCycle === 'basica' && (
+                  <div className="space-y-10">
+                    {[
+                      { title: 'PRIMER PISO', piso: 1, blocks: ['08:15 a 09:00', '09:00 a 09:45', '10:00 a 10:45', '10:45 a 11:30', '11:45 a 12:30', '12:30 a 13:15', '14:00 a 14:45', '14:45 a 15:30', '15:30 a 16:20'], dataKey: 'p1' },
+                      { title: 'SEGUNDO PISO', piso: 2, blocks: ['08:15 a 09:00', '09:00 a 09:45', '10:00 a 10:45', '10:45 a 11:30', '11:45 a 12:30', '12:30 a 13:15', '13:15 a 14:00', '14:45 a 15:30', '15:30 a 16:20'], dataKey: 'p2' },
+                      { title: 'TERCER PISO', piso: 3, blocks: ['08:15 a 09:00', '09:00 a 09:45', '10:00 a 10:45', '10:45 a 11:30', '11:45 a 12:30', '12:30 a 13:15', '13:15 a 14:00', '14:00 a 14:45', '14:45 a 15:30', '15:30 a 16:20'], dataKey: 'p3' }
+                    ].map(table => (
+                      <div key={table.piso} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div className="bg-slate-900 text-white px-6 py-3 font-bold text-sm tracking-wide">
+                          PISO {table.piso} - SALA DE PROFESORES Y EQUIPOS
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-xs text-slate-700">
+                            <thead className="bg-slate-100 font-semibold border-b border-slate-200 uppercase">
+                              <tr>
+                                <th className="p-3.5 border-r border-slate-200">Bloque</th>
+                                <th className="p-3.5 border-r border-slate-200 text-center">Piso</th>
+                                <th className="p-3.5 border-r border-slate-200">Lunes</th>
+                                <th className="p-3.5 border-r border-slate-200">Martes</th>
+                                <th className="p-3.5 border-r border-slate-200">Miércoles</th>
+                                <th className="p-3.5 border-r border-slate-200">Jueves</th>
+                                <th className="p-3.5">Viernes</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                              {table.blocks.map((b, idx) => {
+                                const rowInfo = basicaData[table.dataKey][b] || {};
+                                const bgBlock = idx < 2 ? 'bg-amber-100' : idx < 5 ? 'bg-blue-100' : 'bg-orange-100';
+                                return (
+                                  <tr key={b} className="hover:bg-slate-50">
+                                    <td className={`p-3 font-bold border-r border-slate-200 ${bgBlock}`}>{b}</td>
+                                    <td className="p-3 text-center font-bold border-r border-slate-200">{table.piso}</td>
+                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.lunes || ''}</td>
+                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.martes || ''}</td>
+                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.miercoles || ''}</td>
+                                    <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.jueves || ''}</td>
+                                    <td className="p-3 font-medium text-slate-800">{rowInfo.viernes || ''}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* PLANILLAS EDUCACIÓN MEDIA */}
+                {currentCycle === 'media' && (
+                  <div className="space-y-10">
+                    {[
+                      { title: 'PRIMER PISO - SALA PROFESORES', piso: 1, dataKey: 'salaProf' },
+                      { title: 'SEGUNDO PISO - SALA CIENCIAS', piso: 2, dataKey: 'salaCiencias' },
+                      { title: 'CARRO NOTEBOOK - SALA TECNOLOGÍA', piso: 2, dataKey: 'carroTecno' }
+                    ].map(table => {
+                      const mediaBlocks = ['08:10 a 08:55', '08:55 a 09:40', '09:40 a 10:25', '10:40 a 11:25', '11:25 a 12:10', '12:25 a 13:10', '13:10 a 13:55', '14:35 a 15:20', '15:20 a 16:05', '16:05 a 16:50'];
+                      return (
+                        <div key={table.title} className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                          <div className="bg-indigo-900 text-white px-6 py-3 font-bold text-sm tracking-wide">
+                            {table.title}
+                          </div>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs text-slate-700">
+                              <thead className="bg-slate-100 font-semibold border-b border-slate-200 uppercase">
+                                <tr>
+                                  <th className="p-3.5 border-r border-slate-200">Bloque</th>
+                                  <th className="p-3.5 border-r border-slate-200 text-center">Piso</th>
+                                  <th className="p-3.5 border-r border-slate-200">Lunes</th>
+                                  <th className="p-3.5 border-r border-slate-200">Martes</th>
+                                  <th className="p-3.5 border-r border-slate-200">Miércoles</th>
+                                  <th className="p-3.5 border-r border-slate-200">Jueves</th>
+                                  <th className="p-3.5">Viernes</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-100">
+                                {mediaBlocks.map((b, idx) => {
+                                  const rowInfo = mediaData[table.dataKey][b] || {};
+                                  const bgBlock = idx < 2 ? 'bg-amber-100' : idx < 5 ? 'bg-blue-100' : 'bg-orange-100';
+                                  return (
+                                    <tr key={b} className="hover:bg-slate-50">
+                                      <td className={`p-3 font-bold border-r border-slate-200 ${bgBlock}`}>{b}</td>
+                                      <td className="p-3 text-center font-bold border-r border-slate-200">{table.piso}</td>
+                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.lunes || ''}</td>
+                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.martes || ''}</td>
+                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.miercoles || ''}</td>
+                                      <td className="p-3 border-r border-slate-200 font-medium text-slate-800">{rowInfo.jueves || ''}</td>
+                                      <td className="p-3 font-medium text-slate-800">{rowInfo.viernes || ''}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VISTA 3: INVENTARIO Y GESTIÓN */}
+            {currentTab === 'admin' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Inventario de Dispositivos</h2>
+                    <p className="text-xs text-slate-500">Administra el inventario asignado al colegio.</p>
+                  </div>
+                  <button
+                    onClick={() => { setEditingDevice(null); setDeviceModalOpen(true); }}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-sm flex items-center gap-2 transition-colors"
+                  >
+                    <i data-lucide="plus" className="w-4 h-4"></i>
+                    Agregar Dispositivo
+                  </button>
+                </div>
+
+                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-slate-600">
+                      <thead className="bg-slate-50 text-slate-700 uppercase font-semibold border-b border-slate-200">
+                        <tr>
+                          <th className="p-4">Dispositivo</th>
+                          <th className="p-4">Categoría</th>
+                          <th className="p-4">Código / Tag</th>
+                          <th className="p-4">Ubicación</th>
+                          <th className="p-4">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {devices.map(device => (
+                          <tr key={device.id} className="hover:bg-slate-50">
+                            <td className="p-4 font-semibold text-slate-900 flex items-center gap-3">
+                              <img src={device.image} className="w-8 h-8 rounded-lg object-cover bg-slate-100" onError={(e) => e.target.src='https://placehold.co/100x100'} />
+                              {device.name}
+                            </td>
+                            <td className="p-4 font-medium">{device.category}</td>
+                            <td className="p-4 font-mono">{device.assetTag}</td>
+                            <td className="p-4">{device.location}</td>
+                            <td className="p-4">{getStatusBadge(device.status)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* Modal de Reserva */}
+          {bookingModalOpen && selectedDeviceForBooking && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <h3 className="font-bold text-base text-slate-900">Reservar {selectedDeviceForBooking.name}</h3>
+                  <button onClick={() => setBookingModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" className="w-5 h-5"></i>
+                  </button>
+                </div>
+                <form onSubmit={handleBookingSubmit} className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Tu Nombre</label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="Ej. Juan Pérez" 
+                      value={bookingName}
+                      onChange={(e) => setBookingName(e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Correo Institucional</label>
+                    <input 
+                      type="email" 
+                      required 
+                      placeholder="ej. jperez@colegio.cl" 
+                      value={bookingEmail}
+                      onChange={(e) => setBookingEmail(e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">Motivo / Asignatura</label>
+                    <textarea 
+                      required 
+                      rows="2" 
+                      placeholder="Ej: Uso de app para Geometría..." 
+                      value={bookingReason}
+                      onChange={(e) => setBookingReason(e.target.value)}
+                      className="w-full text-xs p-2.5 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none"
+                    ></textarea>
+                  </div>
+                  <div className="pt-2 flex justify-end gap-2">
+                    <button type="button" onClick={() => setBookingModalOpen(false)} className="px-4 py-2 text-xs font-semibold text-slate-600">Cancelar</button>
+                    <button type="submit" className="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow transition-colors">Confirmar Reserva</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
