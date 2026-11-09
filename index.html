@@ -444,6 +444,30 @@
     };
 
     const INITIAL_RESERVATIONS = createMediaReservations();
+    const RESERVATIONS_STORAGE_KEY = 'equiphub-basic-reservations-v1';
+
+    const loadBasicReservations = () => {
+      try {
+        const savedReservations = window.localStorage.getItem(RESERVATIONS_STORAGE_KEY);
+        if (savedReservations === null) {
+          return INITIAL_RESERVATIONS.filter(reservation => reservation.cycle === 'Basica');
+        }
+
+        const parsedReservations = JSON.parse(savedReservations);
+        if (!Array.isArray(parsedReservations) || parsedReservations.some(reservation =>
+          !reservation || typeof reservation !== 'object' ||
+          typeof reservation.id !== 'string' ||
+          typeof reservation.startDate !== 'string' ||
+          typeof reservation.periodId !== 'string'
+        )) {
+          throw new Error('El formato de las reservas guardadas no es válido.');
+        }
+        return parsedReservations.filter(reservation => reservation.cycle === 'Basica');
+      } catch (error) {
+        console.error('No se pudieron cargar las reservas guardadas en este navegador.', error);
+        return INITIAL_RESERVATIONS.filter(reservation => reservation.cycle === 'Basica');
+      }
+    };
 
     const CATEGORIES = ['Todos', 'iPads', 'Notebooks', 'AppleTV'];
 
@@ -462,7 +486,7 @@
       const cycle = 'Basica';
       const [viewMode, setViewMode] = useState('matrix'); // 'matrix' | 'list'
       const [devices, setDevices] = useState(INITIAL_DEVICES);
-      const [reservations, setReservations] = useState(() => INITIAL_RESERVATIONS.filter(reservation => reservation.cycle === 'Basica'));
+      const [reservations, setReservations] = useState(loadBasicReservations);
       const [currentTab, setCurrentTab] = useState('my-reservations');
       const [selectedCategory, setSelectedCategory] = useState('Todos');
       const [searchQuery, setSearchQuery] = useState('');
@@ -491,6 +515,15 @@
           window.lucide.createIcons();
         }
       });
+
+      useEffect(() => {
+        try {
+          window.localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(reservations));
+        } catch (error) {
+          console.error('No se pudieron guardar las reservas en este navegador.', error);
+          showToast('No se pudieron guardar los cambios en este navegador. No actualices la página y revisa el almacenamiento disponible.', 'error');
+        }
+      }, [reservations]);
 
       const cycleLabel = 'Educación Básica';
 
